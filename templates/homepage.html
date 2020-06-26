@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/style.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;}
+
+.scroll{ 
+width: 280px; 
+height: 300px; 
+overflow-x: hidden; 
+overflow-y: auto;
+padding: 20px;
+}
+
+.userText {
+    color: black;
+    font-size: 14px;
+    text-align: right;
+    line-height: 30px;
+}
+.userText span {
+    font-size: 14px;
+    background-color: #FBEEE6;
+    padding: 10px;
+    border-radius: 2px;
+}
+.botText {
+    color: black;
+    font-size: 14px;
+    text-align: left;
+    line-height: 30px;
+}
+.botText span {
+    font-size: 14px;
+    background-color: #E8F6F3;
+    padding: 10px;
+    border-radius: 2px;
+}
+
+/* Button used to open the chat form - fixed at the bottom of the page */
+.open-button {
+  background-color: #555;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  position: fixed;
+  bottom: 23px;
+  right: 28px;
+  width: 280px;
+}
+
+/* The popup chat - hidden by default */
+.chat-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+
+/* Add styles to the form container */
+.form-container {
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+}
+
+/* Full-width textarea */
+.form-control {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+  resize: none;
+  min-height: 50px;
+}
+
+/* When the textarea gets focus, do something */
+.form-control:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Set a style for the submit/send button */
+.form-container .btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:10px;
+  opacity: 0.8;
+}
+
+/* Add a red background color to the cancel button */
+.form-container .cancel {
+  background-color: red;
+}
+
+/* Add some hover effects to buttons */
+.form-container .btn:hover, .open-button:hover {
+  opacity: 1;
+}
+</style>
+</head>
+
+<body>
+
+<h1 class="jumbotron">Customer 360 - The FAQ Bot</h1>
+<p>Click on the button at the bottom of this page to open the chat form.</p>
+<p>Customer</p>
+<p>Customer Master Data Management is a platform to create and manage central records of customer master data & avoid duplication of data.</P>
+<button class="open-button" onclick="openForm()">Chat</button>
+
+<div class="chat-popup" id="myForm">
+  <div class="form-container">
+    <p class="botText"><b>Please post your queries below</b></p>
+    <div id="chatbox" class="border scroll border-success"></div>
+    <div id="userInput">
+      <input id="textInput" class="form-control" type="text" name="msg" placeholder="Type Your Message Here">
+      <input id="buttonInput" type="submit" class="btn btn-success" value="Send">
+      <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openForm() {
+  document.getElementById("myForm").style.display = "block";
+}
+
+function closeForm() {
+  document.getElementById("myForm").style.display = "none";
+}
+
+function getResponse() {
+        let userText = $("#textInput").val();
+        let userHtml = '<p class="userText"><span>' + userText + '</span></p>';
+        $("#textInput").val("");
+        $("#chatbox").append(userHtml);
+        document.getElementById('chatbox').scrollIntoView({block: 'start', behavior: 'smooth'});
+        $.get("/get", { msg: userText }).done(function(data) {
+        var botHtml = '<p class="botText"><span>' + data + '</span></p>';
+        $("#chatbox").append(botHtml);
+        document.getElementById('chatbox').scrollIntoView({block: 'start', behavior: 'smooth'});
+});
+}
+
+$("#textInput").keypress(function(e) {
+//if enter key is pressed
+    if(e.which == 13) {
+      getResponse();
+    }
+});
+$("#buttonInput").click(function() {
+  getResponse();
+});
+
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</body>
+</html>
